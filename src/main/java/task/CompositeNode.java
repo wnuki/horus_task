@@ -23,5 +23,4 @@ public class CompositeNode implements ICompositeNode {
     public void addNode(INode node) {
         nodes.add(node);
     }
-
 }

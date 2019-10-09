@@ -5,53 +5,51 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 @EqualsAndHashCode
 @Getter
 public class MyStructure implements IMyStructure {
     private List<INode> nodes = new ArrayList<>();
 
-    public INode findByCode(String code) {
-        for (INode node : finalNodes(nodes)) {
-            if (node.getCode().equals(code)) {
-                return node;
-            }
-        }
-        return null;
-    }
-
-    public INode findByRenderer(String renderer) {
-        for (INode node : finalNodes(nodes)) {
-            if (node.getRenderer().equals(renderer)) {
-                return node;
-            }
-        }
-        return null;
-    }
-
-    public int count() {
-        return finalNodes(nodes).size();
-
-    }
-
     public void addNode(INode node) {
         nodes.add(node);
     }
 
-    private List<INode> flatNodes(ICompositeNode node) {
-        return node.getNodes().stream()
-                .collect(Collectors.toList());
+    @Override
+    public INode findByCode(String code) {
+        return findByPredicate(n -> n.getCode().equals(code));
     }
 
-    private List<INode> finalNodes = new ArrayList<>();
-    private List<INode> finalNodes(List<INode> nodes) {
+    @Override
+    public INode findByRenderer(String renderer) {
+        return findByPredicate(n -> n.getRenderer().equals(renderer));
+    }
+
+    @Override
+    public int count() {
+        return flattenNodesList(nodes).size();
+    }
+
+    private List<INode> flattenCompositeNode(ICompositeNode node) {
+        return new ArrayList<>(node.getNodes());
+    }
+
+    private List<INode> flatNodes = new ArrayList<>();
+    private List<INode> flattenNodesList(List<INode> nodes) {
         for (INode node : nodes) {
             if (node instanceof ICompositeNode) {
-                finalNodes(flatNodes((ICompositeNode) node));
+                flattenNodesList(flattenCompositeNode((ICompositeNode) node));
             }
-            finalNodes.add(node);
+            flatNodes.add(node);
         }
-        return finalNodes;
+        return flatNodes;
+    }
+
+    private INode findByPredicate(Predicate<INode> predicate) {
+        return flattenNodesList(nodes).stream()
+                .filter(predicate)
+                .findFirst()
+                .orElse(null);
     }
 }

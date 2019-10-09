@@ -12,6 +12,4 @@ import lombok.ToString;
 public class Node implements INode {
     private String code;
     private String renderer;
-
-
 }
