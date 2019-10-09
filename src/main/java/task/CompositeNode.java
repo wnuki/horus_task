@@ -2,21 +2,26 @@ package task;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @EqualsAndHashCode
-public class CompositeNode extends Node implements ICompositeNode {
-    private List<INode> nodes;
+@Getter
+@ToString
+public class CompositeNode implements ICompositeNode {
+    private List<INode> nodes = new ArrayList<>();
+    private String code;
+    private String renderer;
 
     public CompositeNode(String code, String renderer) {
-        super(code, renderer);
-        nodes = new ArrayList<INode>();
+        this.code = code;
+        this.renderer = renderer;
     }
 
     public void addNode(INode node) {
         nodes.add(node);
     }
+
 }

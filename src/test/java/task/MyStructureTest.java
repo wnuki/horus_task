@@ -3,6 +3,7 @@ package task;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,22 +16,35 @@ public class MyStructureTest {
 
     private static int counter = 0;
 
-    private MyStructure compositeStructure = new MyStructure();
-    private IMyStructure emptyStructure = new MyStructure();
+    private static MyStructure compositeStructure;
+    private static IMyStructure emptyStructure;
 
-    private final INode node1 = new Node("code1", "renderer1");
-    private final INode node2 = new Node("code2", "renderer2");
-    private final INode node3 = new Node("code3", "renderer3");
-    private final INode node4 = new Node("code4", "renderer4");
-    private final INode node5 = new Node("code5", "renderer5");
+    private static final Node node1 = new Node("code1", "renderer1");
+    private static final Node node2 = new Node("code2", "renderer2");
+    private static final Node node3 = new Node("code3", "renderer3");
+    private static final Node node4 = new Node("code4", "renderer4");
+    private static final Node node5 = new Node("code5", "renderer5");
 
-    private CompositeNode compositenode1 = new CompositeNode("cCode1", "cRenderer1");
-    private CompositeNode compositenode2 = new CompositeNode("cCode2", "cRenderer2");
+    private static CompositeNode compositenode1 = new CompositeNode("cCode1", "cRenderer1");
+    private static CompositeNode compositenode2 = new CompositeNode("cCode2", "cRenderer2");
+
+    @BeforeClass
+    public static void setUpSNodes() {
+        compositenode1.addNode(node1);
+        compositenode1.addNode(node2);
+        compositenode2.addNode(compositenode1);
+        compositenode2.addNode(node3);
+    }
 
     @Before
-    public void setLog() {
+    public void setUpStructure() {
         counter++;
         log.info("Executing test #" + counter);
+        emptyStructure = new MyStructure();
+        compositeStructure = new MyStructure();
+        compositeStructure.addNode(compositenode2);
+        compositeStructure.addNode(node4);
+        compositeStructure.addNode(node5);
     }
 
     @AfterClass
@@ -40,13 +54,13 @@ public class MyStructureTest {
 
     @Test
     public void shouldReturnNullWhenFindByCodeAndNodesAreEmpty() {
-        INode result = emptyStructure.findByCode("testCode");
+        INode result = emptyStructure.findByCode("code1");
         assertThat(result, is(nullValue()));
     }
 
     @Test
     public void shouldReturnNullWhenFindByRendererAndNodesAreEmpty() {
-        INode result = emptyStructure.findByRenderer("testRenderer");
+        INode result = emptyStructure.findByRenderer("renderer1");
         assertThat(result, is(nullValue()));
     }
 
@@ -58,46 +72,31 @@ public class MyStructureTest {
 
     @Test
     public void shouldReturnNullWhenNotFoundByCode() {
-        setUpStructure();
         INode result = compositeStructure.findByCode("testCode");
         assertThat(result, is(nullValue()));
     }
 
     @Test
     public void shouldReturnNullWhenNotFoundByRenderer() {
-        setUpStructure();
         INode result = compositeStructure.findByRenderer("testRenderer");
         assertThat(result, is(nullValue()));
     }
 
     @Test
     public void shouldReturnNodeByCode() {
-        setUpStructure();
         INode result = compositeStructure.findByCode("code2");
         assertThat(result, is(node2));
     }
 
     @Test
     public void shouldReturnNodeByRenderer() {
-        setUpStructure();
-        INode result = compositeStructure.findByRenderer("code2");
+        INode result = compositeStructure.findByRenderer("renderer2");
         assertThat(result, is(node2));
     }
 
     @Test
     public void shouldReturnNumberOfNodes() {
-        setUpStructure();
         int result = compositeStructure.count();
-        assertEquals(5, result);
-    }
-
-    private void setUpStructure() {
-        compositenode1.addNode(node1);
-        compositenode1.addNode(node2);
-        compositenode2.addNode(compositenode1);
-        compositenode2.addNode(node3);
-        compositeStructure.addNode(compositenode2);
-        compositeStructure.addNode(node4);
-        compositeStructure.addNode(node5);
+        assertEquals(7, result);
     }
 }
