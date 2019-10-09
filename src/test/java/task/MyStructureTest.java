@@ -16,14 +16,14 @@ public class MyStructureTest {
 
     private static int counter = 0;
 
-    private static MyStructure compositeStructure;
-    private static IMyStructure emptyStructure;
+    private MyStructure compositeStructure;
+    private IMyStructure emptyStructure;
 
-    private static final Node node1 = new Node("code1", "renderer1");
-    private static final Node node2 = new Node("code2", "renderer2");
-    private static final Node node3 = new Node("code3", "renderer3");
-    private static final Node node4 = new Node("code4", "renderer4");
-    private static final Node node5 = new Node("code5", "renderer5");
+    private static Node node1 = new Node("code1", "renderer1");
+    private static Node node2 = new Node("code2", "renderer2");
+    private static Node node3 = new Node("code3", "renderer3");
+    private static Node node4 = new Node("code4", "renderer4");
+    private static Node node5 = new Node("code5", "renderer5");
 
     private static CompositeNode compositenode1 = new CompositeNode("cCode1", "cRenderer1");
     private static CompositeNode compositenode2 = new CompositeNode("cCode2", "cRenderer2");
@@ -40,7 +40,9 @@ public class MyStructureTest {
     public void setUpStructure() {
         counter++;
         log.info("Executing test #" + counter);
+
         emptyStructure = new MyStructure();
+
         compositeStructure = new MyStructure();
         compositeStructure.addNode(compositenode2);
         compositeStructure.addNode(node4);
@@ -83,13 +85,13 @@ public class MyStructureTest {
     }
 
     @Test
-    public void shouldReturnNodeByCode() {
+    public void shouldReturnNodeWhenFindByCode() {
         INode result = compositeStructure.findByCode("code2");
         assertThat(result, is(node2));
     }
 
     @Test
-    public void shouldReturnNodeByRenderer() {
+    public void shouldReturnNodeWhenFindByRenderer() {
         INode result = compositeStructure.findByRenderer("renderer2");
         assertThat(result, is(node2));
     }
